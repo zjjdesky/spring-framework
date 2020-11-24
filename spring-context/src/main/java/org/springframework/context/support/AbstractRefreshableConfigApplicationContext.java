@@ -66,10 +66,13 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
 	public void setConfigLocation(String location) {
+		// String CONFIG_LOCATION_DELIMITERS = ",; /t/n";
+		// 即多个资源文件路径之间用” ,; \t\n”分隔，解析成数组形式
 		setConfigLocations(StringUtils.tokenizeToStringArray(location, CONFIG_LOCATION_DELIMITERS));
 	}
 
 	/**
+	 * 解析Bean定义资源文件的路径，处理多个资源文件字符串数组
 	 * Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
