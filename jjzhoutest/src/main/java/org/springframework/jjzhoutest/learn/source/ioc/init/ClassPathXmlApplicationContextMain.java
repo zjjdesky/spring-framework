@@ -11,5 +11,7 @@ public class ClassPathXmlApplicationContextMain {
 
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("ioc/application.xml");
+		MyTestBean myTestBean = (MyTestBean) context.getBean("myTestBean");
+		System.out.println(myTestBean.getName());
 	}
 }
