@@ -517,6 +517,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		// q: 为什么要加锁？
+		// a: ApplicationContext谁都可以调，因为谁都可以使用，有可能是单线程，也有可能是多线程。
 		synchronized (this.startupShutdownMonitor) {
 			// 1、调用容器准备刷新的方法，获取容器的当时时间，同时给容器设置同步标识
 			// Prepare this context for refreshing.
@@ -1046,9 +1048,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 
 			// Destroy all cached singletons in the context's BeanFactory.
+			// 销毁所有的Bean
 			destroyBeans();
 
 			// Close the state of this context itself.
+			// 关闭BeanFactory
 			closeBeanFactory();
 
 			// Let subclasses do some final clean-up if they wish...
