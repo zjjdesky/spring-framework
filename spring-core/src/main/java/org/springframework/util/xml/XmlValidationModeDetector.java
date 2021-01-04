@@ -92,6 +92,9 @@ public class XmlValidationModeDetector {
 		// Peek into the file to look for DOCTYPE.
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
+			// 主要是通过读取XML文件的内容，判断内容中是否包含有DOCTYPE，如果是则为DTD，否则为XSD
+			// 当然只会读取到第一个 “<” 处，因为验证模式一定会在第一个 “<” 之前。
+			// 如果当中出现了CharConversionException异常，则为XSD模式。
 			boolean isDtdValidated = false;
 			String content;
 			while ((content = reader.readLine()) != null) {

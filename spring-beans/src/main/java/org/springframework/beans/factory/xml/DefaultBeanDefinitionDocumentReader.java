@@ -125,12 +125,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// the new (child) delegate with a reference to the parent for fallback purposes,
 		// then ultimately reset this.delegate back to its original (parent) reference.
 		// this behavior emulates a stack of delegates without actually necessitating one.
+
 		// 具体的解析过程由 BeanDefinitionParserDelegate 实现，
 		// BeanDefinitionParserDelegate 中定义了 Spring Bean 定义 XML 文件的各种元素
 		BeanDefinitionParserDelegate parent = this.delegate;
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
+			// 处理profile属性
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -148,6 +150,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 
 		// 在解析 Bean 定义之前，进行自定义的解析，增强解析过程的可扩展性
+		// 空实现 模板方法模式
 		preProcessXml(root);
 		// 从 Document 的根元素开始进行 Bean 定义的 Document 对象
 		parseBeanDefinitions(root, this.delegate);
@@ -185,7 +188,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					if (delegate.isDefaultNamespace(ele)) {
 						parseDefaultElement(ele, delegate);
 					}
-					else {//没有使用 Spring 默认的 XML 命名空间，则使用用户自定义的解析规则解析元素节点
+					else {
+						//没有使用 Spring 默认的 XML 命名空间，则使用用户自定义的解析规则解析元素节点
 						delegate.parseCustomElement(ele);
 					}
 				}
@@ -312,6 +316,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	/**
+	 * ref -> <url>https://www.cnblogs.com/java-chen-hao/p/11115300.html</url>
+	 * 1. 首先委托BeanDefinitionDelegate类的parseBeanDefinitionElement方法进行元素的解析，
+	 * 	  返回BeanDefinitionHolder类型的实例bdHolder。
+	 * 	  经过这个方法后bdHolder实例已经包含了我们配置文件中的各种属性了，例如class，name，id，alias等。
+	 * 2. 当返回的dbHolder不为空的情况下若存在默认标签的子节点下再有自定义属性，还需要再次对自定义标签进行解析。
+	 * 3. 当解析完成后，需要对解析后的bdHolder进行注册，
+	 *    注册过程委托给了BeanDefinitionReaderUtils的registerBeanDefinition方法。
+	 * 4. 最后发出响应事件，通知相关的监听器已经加载完这个Bean了。
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
 	 */
